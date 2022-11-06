@@ -8,8 +8,8 @@ void Interface::ShowInterface() {
     char option_button = '1';
     do {
         std::cout
-                << "\nProsze zdecydowac jak chcesz grac\nalbo czy zakonczyc program \n"
-                   "MoveKnightAutomatically czy sterowac\n(1 - PlayAutomaticGame, 2 - sterowanie, 0 - koniec):  \n";
+                << "\nPlease specify how you would like to play\nor if to end the game \n"
+                   "Play the game automatically or with control\n(1 - Play Game Automatic, 2 - Controlling, 0 - End):  \n";
         std::cin >> option_button;
         switch (option_button) {
             case '1':
@@ -19,10 +19,10 @@ void Interface::ShowInterface() {
                 PlayControllableGame();
                 break;
             case '0':
-                std::cout << "koniec programu\n";
+                std::cout << "End of Game\n";
                 break;
             default:
-                std::cout << "Zla cyfra \n";
+                std::cout << "Bad Number \n";
         }
     } while (option_button != '0');
 }

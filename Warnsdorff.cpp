@@ -24,34 +24,27 @@ void Warnsdorff::PlayControllableGame() {
     InitialiseKnight();
     char playing_button = '0';
     for (int i = 1; i < sy_board * sx_board; i++) {
-
         if (setWhereToMove()) {
             break;
         }
-        //zapelnienie planszy tworzac
-        //liste dwukierunkowa zeby moc sie poruszac
         CreateMovesList();
     }
 
-    //ustawienie planszy jak w momencie poczatkowym
-    //poniewaz zapelnilismy ja tworzac liste dwukierunkowa
     for (int i = 0; i < sx_board; i++) {
-
         for (int j = 0; j < sy_board; j++) {
             pBoard[i][j] = 'O';
         }
     }
-    //pBoard jest cala w 0 teraz ustawiamy Konia jak na poczatku
     pBoard[pHead->position_x][pHead->position_y] = 'K';
     auto *pKnights_current_place = pHead;
-    std::cout << "Sterowanie: a - mMovesStruct wstecz, d - mMovesStruct naprzod, s - dokonczenie gry MoveKnightAutomatically \n";
+    std::cout << "Controls: a - one step backward, d - one step forward, s - finish game automatically \n";
     PrintTable();
     do {
         std::cout << "\n";
         std::cin >> playing_button;
         if (playing_button == 'a') {
             if (pKnights_current_place->pBefore == nullptr) {
-                std::cout << "nie mozna wstecz\n";
+                std::cout << "can't move more backward\n";
             } else {
                 pBoard[pKnights_current_place->position_x][pKnights_current_place->position_y] = '0';
                 pKnights_current_place = pKnights_current_place->pBefore;
@@ -61,7 +54,7 @@ void Warnsdorff::PlayControllableGame() {
             }
         } else if (playing_button == 'd') {
             if (pKnights_current_place->pNext == nullptr) {
-                std::cout << "Brak dalszych ruchow\n";
+                std::cout << "No more moves\n";
                 break;
             } else {
                 pBoard[pKnights_current_place->position_x][pKnights_current_place->position_y] = char(131);

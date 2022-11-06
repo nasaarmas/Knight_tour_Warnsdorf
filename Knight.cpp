@@ -7,7 +7,7 @@
 
 void Board::InitialiseBoard() {
     do {
-      std::cout << "Prosze okreslic rozmiar planszy wpierw x pozniej y (wieksze od 0) \n";
+      std::cout << "Please specify size x and y of board (bigger than 0) \n";
       std::cin >> sy_board >> sx_board;
     } while (sy_board < 1 || sx_board < 1);
 
@@ -21,18 +21,10 @@ void Board::InitialiseBoard() {
 }
 
 void Knight::InitialiseKnight() {
-    std::cout << "Prosze okerslic pozycje skoczka \n(wpierw wymiar 0 < x < " << sy_board << " pozniej 0 < y < " << sx_board << ") \n";
+    std::cout << "Specify position of knight \n(position x: 0 < x < " << sy_board << " now y: 0 < y < " << sx_board << ") \n";
 
-    /*
-    std::random_device rd;
-    std::default_random_engine el(rd());
-    std::uniform_int_distribution<int> unfiorm_dist(0, sy_board - 1);
-    knights_y = unfiorm_dist(el);
-    std::uniform_int_distribution<int> unfiorm_dis(0, sx_board - 1);
-    knights_x = unfiorm_dis(el);
-     */
     do {
-        std::cout << "tak zeby znajdowala sie na planszy \n";
+        std::cout << "that way it's on the board \n";
         std::cin >> knights_y >> knights_x;
     } while (knights_x < 1 || knights_x >= sx_board || knights_y < 1 || knights_y >= sy_board);
     pBoard[knights_x][knights_y] = 'K';
