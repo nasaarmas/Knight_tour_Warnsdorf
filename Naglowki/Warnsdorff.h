@@ -2,33 +2,25 @@
 // Created by Bartek on 10.03.2021.
 //
 
-#ifndef PROJEKT_WARNSDORFF_H
-#define PROJEKT_WARNSDORFF_H
+#ifndef PROJECT_WARNSDORFF_H
+#define PROJECT_WARNSDORFF_H
 
-#include "Rycerz.h"
+#include "Knight.h"
 
-class Warnsdorff : public Rycerz {
+class Warnsdorff : public Knight {
 protected:
-    int px_next, py_next;
-
-    void automat();
-
-    void automatycznie();
-
-    void sterowane();
+    int knights_next_x, knights_next_y;
+    void PlayAutomaticGame();
+    void MoveKnightAutomatically();
+    void PlayControllableGame();
 
 private:
-    bool gdzie_sie_ruszyc();
-
-    void wypisz_tablice();
-
-    int mozliwe_ruchy(int px_skocz, int py_skocz);
-
-    bool czy_nie_poza_plansza(int px, int py);
-
-    void usun_dane();
-
-    void tworzenie_listy();
+    bool setWhereToMove();
+    void PrintTable();
+    int getPossibleMoves(int positionKnightX, int positionKnightY);
+    bool CheckFieldAccessibility(int fieldsX, int fieldsY);
+    void FreeMemory();
+    void CreateMovesList();
 };
 
-#endif //PROJEKT_WARNSDORFF_H
+#endif //PROJECT_WARNSDORFF_H

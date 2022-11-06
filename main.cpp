@@ -1,7 +1,7 @@
-#include "Naglowki/Interfejs.h"
+#include "Naglowki/Interface.h"
 
 int main() {
-    Interfejs i;
-
+    auto game = new Interface();
+    game->ShowInterface();
     return 0;
 }

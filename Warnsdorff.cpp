@@ -1,99 +1,98 @@
 #include "Naglowki/Warnsdorff.h"
 #include <iostream>
 
-
-void Warnsdorff::automat() {
-    inicjalizacja_planszy();
-    inicjalizacja_rycerza();
-    wypisz_tablice();
-    automatycznie();
-    usun_dane();
+void Warnsdorff::PlayAutomaticGame() {
+    InitialiseBoard();
+    InitialiseKnight();
+    PrintTable();
+    MoveKnightAutomatically();
+    FreeMemory();
 }
 
-void Warnsdorff::automatycznie() {
-    for (int i = 1; i < ry_planszy * rx_planszy; i++) {
+void Warnsdorff::MoveKnightAutomatically() {
+    for (int i = 1; i < sy_board * sx_board; i++) {
         std::cout << "\n";
-        if (gdzie_sie_ruszyc()) {
+        if (setWhereToMove()) {
             break;
         }
-        wypisz_tablice();
+        PrintTable();
     }
 }
 
-void Warnsdorff::sterowane() {
-    inicjalizacja_planszy();
-    inicjalizacja_rycerza();
-    char b = '0';
-    for (int i = 1; i < ry_planszy * rx_planszy; i++) {
+void Warnsdorff::PlayControllableGame() {
+    InitialiseBoard();
+    InitialiseKnight();
+    char playing_button = '0';
+    for (int i = 1; i < sy_board * sx_board; i++) {
 
-        if (gdzie_sie_ruszyc()) {
+        if (setWhereToMove()) {
             break;
         }
         //zapelnienie planszy tworzac
         //liste dwukierunkowa zeby moc sie poruszac
-        tworzenie_listy();
+        CreateMovesList();
     }
 
     //ustawienie planszy jak w momencie poczatkowym
     //poniewaz zapelnilismy ja tworzac liste dwukierunkowa
-    for (int i = 0; i < rx_planszy; i++) {
+    for (int i = 0; i < sx_board; i++) {
 
-        for (int j = 0; j < ry_planszy; j++) {
-            plansza[i][j] = 'O';
+        for (int j = 0; j < sy_board; j++) {
+            pBoard[i][j] = 'O';
         }
     }
-    //plansza jest cala w 0 teraz ustawiamy Konia jak na poczatku
-    plansza[glowa->pozycja_x][glowa->pozycja_y] = 'K';
-    auto *ruszajaca_sie = glowa;
-    std::cout << "Sterowanie: a - ruch wstecz, d - ruch naprzod, s - dokonczenie gry automatycznie \n";
-    wypisz_tablice();
+    //pBoard jest cala w 0 teraz ustawiamy Konia jak na poczatku
+    pBoard[pHead->position_x][pHead->position_y] = 'K';
+    auto *pKnights_current_place = pHead;
+    std::cout << "Sterowanie: a - mMovesStruct wstecz, d - mMovesStruct naprzod, s - dokonczenie gry MoveKnightAutomatically \n";
+    PrintTable();
     do {
         std::cout << "\n";
-        std::cin >> b;
-        if (b == 'a') {
-            if (ruszajaca_sie->before == nullptr) {
+        std::cin >> playing_button;
+        if (playing_button == 'a') {
+            if (pKnights_current_place->pBefore == nullptr) {
                 std::cout << "nie mozna wstecz\n";
             } else {
-                plansza[ruszajaca_sie->pozycja_x][ruszajaca_sie->pozycja_y] = '0';
-                ruszajaca_sie = ruszajaca_sie->before;
-                plansza[ruszajaca_sie->pozycja_x][ruszajaca_sie->pozycja_y] = 'K';
-                px_skoczka = ruszajaca_sie->pozycja_x;
-                py_skoczka = ruszajaca_sie->pozycja_y;
+                pBoard[pKnights_current_place->position_x][pKnights_current_place->position_y] = '0';
+                pKnights_current_place = pKnights_current_place->pBefore;
+                pBoard[pKnights_current_place->position_x][pKnights_current_place->position_y] = 'K';
+                knights_x = pKnights_current_place->position_x;
+                knights_y = pKnights_current_place->position_y;
             }
-        } else if (b == 'd') {
-            if (ruszajaca_sie->next == nullptr) {
+        } else if (playing_button == 'd') {
+            if (pKnights_current_place->pNext == nullptr) {
                 std::cout << "Brak dalszych ruchow\n";
                 break;
             } else {
-                plansza[ruszajaca_sie->pozycja_x][ruszajaca_sie->pozycja_y] = char(131);
-                ruszajaca_sie = ruszajaca_sie->next;
-                plansza[ruszajaca_sie->pozycja_x][ruszajaca_sie->pozycja_y] = 'K';
-                px_skoczka = ruszajaca_sie->pozycja_x;
-                py_skoczka = ruszajaca_sie->pozycja_y;
+                pBoard[pKnights_current_place->position_x][pKnights_current_place->position_y] = char(131);
+                pKnights_current_place = pKnights_current_place->pNext;
+                pBoard[pKnights_current_place->position_x][pKnights_current_place->position_y] = 'K';
+                knights_x = pKnights_current_place->position_x;
+                knights_y = pKnights_current_place->position_y;
             }
-        } else if (b == 's') {
-            automatycznie();
+        } else if (playing_button == 's') {
+            MoveKnightAutomatically();
             break;
         }
-        wypisz_tablice();
-    } while (b != '0');
-    usun_dane();
-    while (glowa->next != nullptr) {
-        ruszajaca_sie = glowa;
-        glowa = glowa->next;
-        delete ruszajaca_sie;
+        PrintTable();
+    } while (playing_button != '0');
+    FreeMemory();
+    while (pHead->pNext != nullptr) {
+        pKnights_current_place = pHead;
+        pHead = pHead->pNext;
+        delete pKnights_current_place;
     }
-    delete glowa;
+    delete pHead;
 }
 
-bool Warnsdorff::gdzie_sie_ruszyc() {
+bool Warnsdorff::setWhereToMove() {
     int pomoc = 9;
     for (int i = 0; i < 8; i++) {
-        if (czy_nie_poza_plansza(px_skoczka + jak_skacze_kon[i].x, py_skoczka + jak_skacze_kon[i].y)) {
-            if (mozliwe_ruchy(px_skoczka + jak_skacze_kon[i].x, py_skoczka + jak_skacze_kon[i].y) < pomoc) {
-                px_next = px_skoczka + jak_skacze_kon[i].x;
-                py_next = py_skoczka + jak_skacze_kon[i].y;
-                pomoc = mozliwe_ruchy(px_next, py_next);
+        if (CheckFieldAccessibility(knights_x + pHowKnightMoves[i].x, knights_y + pHowKnightMoves[i].y)) {
+            if (getPossibleMoves(knights_x + pHowKnightMoves[i].x, knights_y + pHowKnightMoves[i].y) < pomoc) {
+                knights_next_x = knights_x + pHowKnightMoves[i].x;
+                knights_next_y = knights_y + pHowKnightMoves[i].y;
+                pomoc = getPossibleMoves(knights_next_x, knights_next_y);
             }
         }
     }
@@ -101,54 +100,54 @@ bool Warnsdorff::gdzie_sie_ruszyc() {
         std::cout << "Nie ma dalszych ruchow \n";
         return true;
     }
-    plansza[px_skoczka][py_skoczka] = char(131);
-    plansza[px_next][py_next] = 'K';
-    px_skoczka = px_next;
-    py_skoczka = py_next;
+    pBoard[knights_x][knights_y] = char(131);
+    pBoard[knights_next_x][knights_next_y] = 'K';
+    knights_x = knights_next_x;
+    knights_y = knights_next_y;
     return false;
 }
 
-int Warnsdorff::mozliwe_ruchy(int px_skocz, int py_skocz) {
+int Warnsdorff::getPossibleMoves(int positionKnightX, int positionKnightY) {
     int p = 0;
     for (int i = 0; i < 8; i++) {
-        if (czy_nie_poza_plansza(px_skocz + jak_skacze_kon[i].x, py_skocz + jak_skacze_kon[i].y)) {
+        if (CheckFieldAccessibility(positionKnightX + pHowKnightMoves[i].x, positionKnightY + pHowKnightMoves[i].y)) {
             p++;
         }
     }
     return p;
 }
 
-bool Warnsdorff::czy_nie_poza_plansza(int px, int py) {
-    if (px >= rx_planszy || px < 0 || py >= ry_planszy || py < 0 || plansza[px][py] != 'O') {
+bool Warnsdorff::CheckFieldAccessibility(int fieldsX, int fieldsY) {
+    if (fieldsX >= sx_board || fieldsX < 0 || fieldsY >= sy_board || fieldsY < 0 || pBoard[fieldsX][fieldsY] != 'O') {
         return false;
     }
     return true;
 }
 
-void Warnsdorff::tworzenie_listy() {
-    auto *nowe_node = new lewo_prawo();
-    ogon->next = nowe_node;
-    nowe_node->before = ogon;
-    ogon = ogon->next;
-    ogon->next = nullptr;
-    ogon->pozycja_y = py_next;
-    ogon->pozycja_x = px_next;  
+void Warnsdorff::CreateMovesList() {
+    auto *pNew_node = new MovesList();
+    pTail->pNext = pNew_node;
+    pNew_node->pBefore = pTail;
+    pTail = pTail->pNext;
+    pTail->pNext = nullptr;
+    pTail->position_y = knights_next_y;
+    pTail->position_x = knights_next_x;
 }
 
-void Warnsdorff::wypisz_tablice() {
-    for (int i = 0; i < rx_planszy; i++) {
+void Warnsdorff::PrintTable() {
+    for (int i = 0; i < sx_board; i++) {
 
-        for (int j = 0; j < ry_planszy; j++) {
-            std::cout << plansza[i][j] << "\t";
+        for (int j = 0; j < sy_board; j++) {
+            std::cout << pBoard[i][j] << "\t";
         }
         std::cout << std::endl;
     }
 }
 
-void Warnsdorff::usun_dane() {
-    for (int i = 0; i < rx_planszy; i++) {
-        delete[] plansza[i];
+void Warnsdorff::FreeMemory() {
+    for (int i = 0; i < sx_board; i++) {
+        delete[] pBoard[i];
     }
-    delete[] plansza;
-    delete[] jak_skacze_kon;
+    delete[] pBoard;
+    delete[] pHowKnightMoves;
 }
