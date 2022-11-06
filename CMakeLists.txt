@@ -10,6 +10,6 @@ add_executable(untitled1
         Naglowki/Knight.h
         Naglowki/Warnsdorff.h
         Interface.cpp
-        main.cpp
         Knight.cpp
+        main.cpp
         Warnsdorff.cpp)
